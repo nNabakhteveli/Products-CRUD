@@ -3,10 +3,10 @@
 $pdo = new PDO('mysql:host=localhost;port=3308;dbname=products_crud', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+echo randomString(8)."<br>";
+echo randomString(8)."<br>";
+echo randomString(8)."<br>";
 
-echo "<pre>";
-var_dump($_POST);
-echo "</pre>";
 
 $title = '';
 $description = '';
@@ -19,6 +19,21 @@ if($_SERVER['REQUEST_METHOD'] === "POST")
   $title = $_POST['title'];
   $description = $_POST['description'];
   $price = $_POST['price'];
+ 
+  
+  $image = $_FILES['image'] ?? null;
+  $imagePath = '';
+
+  if (!is_dir('images')) {
+    mkdir('images');
+  }
+
+  if ($image && $image['tmp_name']) {
+    $imagePath = 'images/' . randomString(8) . '/' . $image['name'];
+    mkdir(dirname($imagePath));
+    move_uploaded_file($image['tmp_name'], $imagePath);
+  }
+
 
   if(!$title) {
     $errors[] = "Product title is required";
@@ -33,7 +48,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST")
     VALUES (:title, :image, :description, :price, :date)");
   
     $statement ->bindValue(':title', $title);
-    $statement ->bindValue(':image', '');
+    $statement ->bindValue(':image', $imagePath);
     $statement ->bindValue(':description', $description);
     $statement ->bindValue(':price', $price);
     $statement ->bindValue(':date', date('Y-m-d H:i:s'));
@@ -44,9 +59,16 @@ if($_SERVER['REQUEST_METHOD'] === "POST")
   }
 }
 
-echo "<pre>";
-var_dump($errors);
-echo "</pre>";
+function randomString($n)
+{
+  $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  $str = '';
+  for($i = 0; $i < $n; $i++){
+    $index = rand(0, strlen($characters) - 1);
+    $str .= $characters[$index];
+  }
+  return $str;
+}
 
 ?>
 
@@ -84,7 +106,7 @@ echo "</pre>";
     <div class="mb-3">
         <label>Product Price</label>
         <div class="form-text"></div>
-        <input name='price' type="number" class="form-control" value="<?php echo $price ?>">
+        <input name='price' step=".01" type="number" class="form-control" value="<?php echo $price ?>">
     </div>
     <div class="mb-3">
         <label>Description</label>
