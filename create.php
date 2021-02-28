@@ -3,16 +3,16 @@
 $pdo = new PDO('mysql:host=localhost;port=3308;dbname=products_crud', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// echo "<pre>";
-// var_dump($_SERVER);
-// echo "</pre>";
-// exit;
-
 
 echo "<pre>";
 var_dump($_POST);
 echo "</pre>";
 
+$title = '';
+$description = '';
+$price = '';
+
+$errors = [];
 
 if($_SERVER['REQUEST_METHOD'] === "POST")
 {
@@ -20,18 +20,34 @@ if($_SERVER['REQUEST_METHOD'] === "POST")
   $description = $_POST['description'];
   $price = $_POST['price'];
 
+  if(!$title) {
+    $errors[] = "Product title is required";
+  }
 
-  $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date)
-  VALUES (:title, :image, :description, :price, :date)");
+  if(!$price){
+    $errors[] = "Product price is required";
+  }
 
-  $statement ->bindValue(':title', $title);
-  $statement ->bindValue(':image', '');
-  $statement ->bindValue(':description', $description);
-  $statement ->bindValue(':price', $price);
-  $statement ->bindValue(':date', date('Y-m-d H:i:s'));
-
-  $statement->execute();
+  if(empty($errors)) {
+    $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date)
+    VALUES (:title, :image, :description, :price, :date)");
+  
+    $statement ->bindValue(':title', $title);
+    $statement ->bindValue(':image', '');
+    $statement ->bindValue(':description', $description);
+    $statement ->bindValue(':price', $price);
+    $statement ->bindValue(':date', date('Y-m-d H:i:s'));
+  
+    $statement->execute();
+    
+    header('Location: index.php');
+  }
 }
+
+echo "<pre>";
+var_dump($errors);
+echo "</pre>";
+
 ?>
 
 <!doctype html>
@@ -46,26 +62,34 @@ if($_SERVER['REQUEST_METHOD'] === "POST")
   <body>
 
   <h1>Create new Product</h1>
-    <form method="POST">
+  <?php 
+    if(!empty($errors)): ?>
+      <div class="alert alert-danger">
+      <?php foreach($errors as $error):?>
+        <div><?php echo $error ?></div>
+      <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+    <form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label>Image</label><br>
+        <input type="file" name='image'>
+        <div id="emailHelp" name='image' class="form-text"></div>
+    </div>
     <div class="mb-3">
         <label>Title</label>
-        <input name='title' type="name" class="form-control">
+        <input name='title' type="name" class="form-control" value="<?php echo $title ?>">
         <div class="form-text">Enter your product name</div>
     </div>
     <div class="mb-3">
         <label>Product Price</label>
         <div class="form-text"></div>
-        <input name='price' type="number" class="form-control">
+        <input name='price' type="number" class="form-control" value="<?php echo $price ?>">
     </div>
     <div class="mb-3">
         <label>Description</label>
         <div class="form-text"></div>
-        <textarea name='description' type="text" cols="60" rows="5"></textarea>
-    </div>
-    <div class="mb-3">
-        <label>Image</label><br>
-        <input type="file" name='image'>
-        <div id="emailHelp" name='image' class="form-text"></div>
+        <textarea name='description' type="text" cols="60" rows="5"><?php echo $description ?></textarea>
     </div>
     <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input">
