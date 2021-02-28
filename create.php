@@ -3,10 +3,35 @@
 $pdo = new PDO('mysql:host=localhost;port=3308;dbname=products_crud', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+// echo "<pre>";
+// var_dump($_SERVER);
+// echo "</pre>";
+// exit;
+
+
 echo "<pre>";
-var_dump($_GET);
+var_dump($_POST);
 echo "</pre>";
 
+
+if($_SERVER['REQUEST_METHOD'] === "POST")
+{
+  $title = $_POST['title'];
+  $description = $_POST['description'];
+  $price = $_POST['price'];
+
+
+  $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date)
+  VALUES (:title, :image, :description, :price, :date)");
+
+  $statement ->bindValue(':title', $title);
+  $statement ->bindValue(':image', '');
+  $statement ->bindValue(':description', $description);
+  $statement ->bindValue(':price', $price);
+  $statement ->bindValue(':date', date('Y-m-d H:i:s'));
+
+  $statement->execute();
+}
 ?>
 
 <!doctype html>
@@ -21,7 +46,7 @@ echo "</pre>";
   <body>
 
   <h1>Create new Product</h1>
-    <form>
+    <form method="POST">
     <div class="mb-3">
         <label>Title</label>
         <input name='title' type="name" class="form-control">
