@@ -50,8 +50,8 @@ $products = $statement->fetchAll(PDO::FETCH_ASSOC);
       <td><?php echo $product['price']?></td>
       <td><?php echo $product['create_date']?></td>
       <td>
-      <button type="button" class="btn btn-outline-primary">Edit</button>
-      <button type="button" class="btn btn-outline-danger">Delete</button>
+      <a href="#"><button type="button" class="btn btn-outline-primary">Edit</button></a>
+      <a href="./delete.php?id=<?php echo $product['id'] ?>"><button type="button" class="btn btn-outline-danger">Delete</button></a>
       </td>
     </tr>
   <?php } ?>

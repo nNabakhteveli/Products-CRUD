@@ -3,11 +3,6 @@
 $pdo = new PDO('mysql:host=localhost;port=3308;dbname=products_crud', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-echo randomString(8)."<br>";
-echo randomString(8)."<br>";
-echo randomString(8)."<br>";
-
-
 $title = '';
 $description = '';
 $price = '';
@@ -119,5 +114,6 @@ function randomString($n)
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
   </body>
 </html>
