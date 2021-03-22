@@ -5,7 +5,7 @@ var_dump($_GET);
 echo '<pre>';
 
 
-$pdo = new PDO('mysql:host=localhost;port=3308;dbname=products_crud', 'root', '');
+$pdo = new PDO('mysql:host=localhost;dbname=products_crud', 'admin', 'root');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $id = $_GET["id"] ?? null;
